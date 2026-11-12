@@ -22,6 +22,66 @@
     }
   });
 
+  // ---- En-tête qui se resserre au défilement
+  var top = document.querySelector(".top");
+  function onScroll() { top.classList.toggle("scrolled", window.scrollY > 20); }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // ---- Apparition des blocs au défilement (décalée pour les éléments d'un même groupe)
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var targets = document.querySelectorAll(
+    ".section .eyebrow, .section h2, .section-lead, .service, .steps li, .product, .play-head, " +
+    ".video, .feature, .gallery figure, .download, .contact-card");
+  if (!reduce && "IntersectionObserver" in window) {
+    targets.forEach(function (el) {
+      el.classList.add("reveal");
+      var siblings = Array.prototype.filter.call(el.parentNode.children, function (c) {
+        return c.className === el.className.replace(" reveal", "") || c.classList.contains("reveal");
+      });
+      var i = siblings.indexOf(el);
+      if (i > 0) el.style.transitionDelay = Math.min(i, 4) * 0.09 + "s";
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    targets.forEach(function (el) { io.observe(el); });
+    // Filet de sécurité : tout bloc déjà à l'écran est affiché (arrivée par un lien #section,
+    // navigateur qui n'a pas encore prévenu l'observateur…). Jamais de zone vide.
+    var pending = false;
+    function revealVisible() {
+      pending = false;
+      var h = window.innerHeight;
+      targets.forEach(function (el) {
+        if (!el.classList.contains("in") && el.getBoundingClientRect().top < h * 0.95) el.classList.add("in");
+      });
+    }
+    window.addEventListener("scroll", function () {
+      if (!pending) { pending = true; requestAnimationFrame(revealVisible); }
+    }, { passive: true });
+    window.addEventListener("load", revealVisible);
+    window.addEventListener("hashchange", function () { setTimeout(revealVisible, 50); });
+    setTimeout(revealVisible, 600);
+    setTimeout(revealVisible, 1500);
+  } else {
+    targets.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  // ---- Compteur qui monte jusqu'à sa valeur quand il devient visible
+  function countUp(el, value) {
+    if (reduce || value < 10) { el.textContent = fmt(value); return; }
+    var start = null, dur = 1400;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min(1, (ts - start) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(value * e));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   // ---- Coordonnées : seules celles renseignées dans config.js sont affichées
   var list = $("contact-list");
   function addContact(label, value, href) {
@@ -83,9 +143,17 @@
         var v = (latest.tag_name || "").replace(/^v/, "");
         if (v) $("version").textContent = "Version " + v + " · Gratuit · Sans abonnement · Sans publicité";
       }
-      $("compteur-total").textContent = fmt(total);
       $("compteur-texte").textContent = total > 1 ? "téléchargements" : "téléchargement";
       $("compteur").hidden = false;
+      var counter = $("compteur-total");
+      if ("IntersectionObserver" in window) {
+        var co = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) { countUp(counter, total); co.disconnect(); }
+        });
+        co.observe(counter);
+      } else {
+        counter.textContent = fmt(total);
+      }
     })
     .catch(function () { /* hors ligne ou limite de l'API : les boutons mènent à la page des versions */ });
 })();
