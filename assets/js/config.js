@@ -7,7 +7,7 @@ window.ANKOAY_CONFIG = {
 
   // Coordonnées (à compléter)
   facebookUrl: "",   // ex. "https://www.facebook.com/AnkoayStudio"
-  email: "",         // ex. "contact@ankoay-studio.mg"
+  email: "ankoaystudio@gmail.com",
   phone: "",         // ex. "+261 34 00 000 00"
   whatsapp: "",      // numéro au format international sans espaces, ex. "261340000000"
   city: "Madagascar",
