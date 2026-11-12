@@ -1,0 +1,5 @@
+# Cloudflare Pages : en-tetes HTTP
+# L'ancienne page /admin ne doit jamais etre gardee en cache
+/admin/*
+  Cache-Control: no-store
+  X-Robots-Tag: noindex
