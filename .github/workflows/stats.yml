@@ -1,0 +1,61 @@
+# Relevé quotidien des téléchargements d'AnkoayPlay (GitHub Releases).
+# Le compteur de GitHub est un total cumulé : ce relevé garde un historique jour par jour
+# (branche « stats », fichier stats-history.json) pour le tableau de bord /admin.
+name: Statistiques de téléchargement
+
+on:
+  schedule:
+    - cron: "55 20 * * *"   # 23 h 55, heure de Madagascar (UTC+3)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  releve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Relevé du jour
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          git config user.name "ankoay-stats"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code origin stats >/dev/null; then
+            git fetch -q origin stats
+            git checkout -q -B stats origin/stats
+          else
+            git checkout -q --orphan stats
+            git rm -rq --cached . && find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          fi
+          python3 - <<'PY'
+          import json, os, datetime, urllib.request
+          repo = os.environ["REPO"]
+          req = urllib.request.Request(f"https://api.github.com/repos/{repo}/releases?per_page=100",
+                                       headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                                                "Accept": "application/vnd.github+json"})
+          releases = json.load(urllib.request.urlopen(req))
+          assets = {}
+          for r in releases:
+              for a in r.get("assets", []):
+                  if a["name"].lower().endswith((".exe", ".deb")):
+                      assets[f'{r["tag_name"]}/{a["name"]}'] = a["download_count"]
+          # date de Madagascar (UTC+3)
+          today = (datetime.datetime.utcnow() + datetime.timedelta(hours=3)).date().isoformat()
+          path = "stats-history.json"
+          data = json.load(open(path)) if os.path.exists(path) else {"days": []}
+          data["days"] = [d for d in data["days"] if d["date"] != today]
+          data["days"].append({"date": today, "assets": assets})
+          data["days"].sort(key=lambda d: d["date"])
+          data["updated"] = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+          json.dump(data, open(path, "w"), indent=1, ensure_ascii=False)
+          print(today, sum(assets.values()), "téléchargements au total")
+          PY
+          git add stats-history.json
+          git commit -q -m "Relevé du $(date -u +%F)" || echo "rien de nouveau"
+          git push -q origin stats

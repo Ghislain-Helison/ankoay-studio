@@ -1,0 +1,74 @@
+/* Tableau de bord admin — couleurs de séries validées (thème sombre, fond #221D19) */
+:root { --win: #3D7FE6; --ubu: #D9731A; --line: #CFC5BB; --grid: #3A322B; }
+
+.admin-tag { color: var(--muted); font-weight: 600; }
+.admin-nav { display: flex; align-items: center; gap: 18px; }
+.admin-nav a { color: var(--text); text-decoration: none; font-weight: 600; }
+.admin-nav a:hover { color: var(--orange); }
+.admin-nav .btn { cursor: pointer; font-family: inherit; }
+.admin { padding-top: 34px; padding-bottom: 60px; }
+.admin-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; margin-bottom: 24px; }
+.admin-head h1 { font-size: 2.2rem; margin: 0; }
+.muted { color: var(--muted); margin: 0; }
+.notice { background: rgba(232, 137, 43, .12); border: 1px solid var(--orange); border-radius: 12px; padding: 14px 18px; }
+
+/* Chiffres clés */
+.tiles { display: grid; grid-template-columns: 1.4fr repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 16px; display: grid; gap: 4px; align-content: start; }
+.tile b { font-size: 2rem; font-weight: 800; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
+.tile-hero b { font-size: 2.8rem; color: var(--text); }
+.tile-hero { border-color: rgba(232, 137, 43, .6); }
+.tile-label { color: var(--muted); font-size: .88rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.tile-sub { color: var(--muted); font-size: .85rem; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.sw-win { background: var(--win); }
+.sw-ubu { background: var(--ubu); }
+
+/* Panneaux et graphiques */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-bottom: 18px; }
+.panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.panel h2 { font-size: 1.15rem; margin: 0; }
+.legend { display: flex; gap: 16px; color: var(--muted); font-size: .9rem; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart .axis text { fill: var(--muted); font-size: 12px; font-family: inherit; }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.chart .baseline { stroke: #5A4F46; stroke-width: 1; }
+.chart .hit { fill: transparent; cursor: crosshair; }
+.chart .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .empty { fill: var(--muted); font-size: 14px; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.two .panel { margin-bottom: 18px; }
+table.data { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+table.data th, table.data td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+table.data th:first-child, table.data td:first-child { text-align: left; }
+table.data th { color: var(--muted); font-size: .85rem; font-weight: 600; }
+.links-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.links-list a { display: grid; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); }
+.links-list a:hover { border-color: var(--orange); }
+.links-list span { color: var(--muted); font-size: .9rem; }
+.table-view summary { cursor: pointer; font-weight: 700; }
+.table-view table { margin-top: 12px; }
+
+/* Infobulle */
+.tip {
+  position: fixed; z-index: 100; pointer-events: none; background: #0F0C0A; color: var(--text);
+  border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: .88rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .5); min-width: 150px;
+}
+.tip b { display: block; margin-bottom: 4px; }
+.tip .row { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.tip .row span { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+
+@media (max-width: 1000px) {
+  .tiles { grid-template-columns: repeat(3, 1fr); }
+  .tile-hero { grid-column: span 3; }
+  .two { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .tile-hero { grid-column: span 2; }
+  .admin-nav a { display: none; }
+}
