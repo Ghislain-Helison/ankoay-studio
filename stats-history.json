@@ -13,7 +13,14 @@
     "v1.3.2/AnkoayPlay-1.3.2-Setup.exe": 3,
     "v1.3.2/ankoayplay_1.3.2_amd64.deb": 2
    }
+  },
+  {
+   "date": "2026-11-14",
+   "assets": {
+    "v1.3.2/AnkoayPlay-1.3.2-Setup.exe": 3,
+    "v1.3.2/ankoayplay_1.3.2_amd64.deb": 2
+   }
   }
  ],
- "updated": "2026-11-13T01:31:48Z"
+ "updated": "2026-11-14T01:05:41Z"
 }
